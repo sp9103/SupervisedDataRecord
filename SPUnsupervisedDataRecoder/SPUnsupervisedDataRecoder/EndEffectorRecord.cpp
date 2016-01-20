@@ -16,7 +16,7 @@ EndEffectorRecord::~EndEffectorRecord(void)
 
 //write function
 void EndEffectorRecord::CreateRecordFile(char *fileName){
-	if(fp_ = NULL){
+	if(fp_ == NULL){
 		fp_ = fopen(fileName, "ab");
 	}
 }
@@ -69,7 +69,7 @@ void EndEffectorRecord::CloseCreatedFile(){
 
 //Read function
 void EndEffectorRecord::OpenRecordFile(char *fileName){
-	if(fp_ = NULL){
+	if(fp_ != NULL){
 		fp_ = fopen(fileName, "rb");
 	}
 }

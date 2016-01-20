@@ -17,6 +17,8 @@
 #define OPENCV_WAIT_DELAY		10
 
 #define BODY_COUNT				6
+#define NUM_XEL					9
+#define LEFT_ARM_USE
 
 #define PI						3.141592653589
 #define DEFAULT_PATH ".\\SupervisedData"

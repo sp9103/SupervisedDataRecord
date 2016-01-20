@@ -5,11 +5,14 @@
 
 #include "KinectConnecter.h"
 #include "EndEffectorRecord.h"
+#include "RobotController\RobotArm.h"
 
 using namespace armsdk;
 
 void printClassData(char* path, int *count);
 bool fileTypeCheck(TCHAR *fileName);
+void ControllerInit(RobotArm *robot);
+int WaitUntilMoveEnd(RobotArm *robot);
 
 int main(){
 	printf("==================Unsupervise Data recoder===================\n");
@@ -29,8 +32,11 @@ int main(){
 
 	KinectConnecter Kinect;
 	EndEffectorRecord record;
+	RobotArm _controller;
 	armsdk::RobotInfo robot;
 	Kinematics kin;
+	
+	veci angi(6);
 
 	//Leftarm
 	robot.AddJoint(  0.0, -ML_PI_2,    0.0,      0.0, ML_PI, -ML_PI, 251000, -251000, ML_PI, -ML_PI, 2);
@@ -46,6 +52,30 @@ int main(){
 
 	namedWindow("KinectColorFrame", CV_WINDOW_KEEPRATIO);
 	namedWindow("KinectDepthFrame", CV_WINDOW_KEEPRATIO);
+	record.CreateRecordFile("SupervisedData.bin");
+
+	ControllerInit(&_controller);
+	WaitUntilMoveEnd(&_controller);
+
+//#ifdef RIGHT_ARM_USE
+//	dxl_write_dword(_controller.DXL_Get_Port(), 7, NX::P_HOMING_OFFSET_LL,  62750, 0);
+//#elif defined LEFT_ARM_USE
+//	dxl_write_dword(_controller.DXL_Get_Port(), 8, NX::P_HOMING_OFFSET_LL, -62750, 0);
+//#endif
+
+	_controller.Arm_Get_JointValue(&angi);
+
+	//맥시멈 앵글 체크 - 쓰레기값 걸러내기
+	for(int JointNum = 0; JointNum < 6; JointNum++)
+	{
+		if(abs(angi[JointNum]) > robot.GetJointInfo(JointNum)->GetMaxAngleInValue() + 10)
+		{
+			cout<<"read fail"<<endl;
+			return -1;
+		}
+	}
+
+	_controller.TorqueOff();
 
 	while(1){
 		presentStoredDataCount = 0;
@@ -139,6 +169,8 @@ int main(){
 
 	destroyAllWindows();
 
+	_controller.DeInit();
+
 	return 0;
 }
 
@@ -195,4 +227,47 @@ bool fileTypeCheck(TCHAR *fileName){
 		return false;
 
 	return true;
+}
+
+void ControllerInit(RobotArm *robot){
+	int robotid[] = {2,4,6,8,10,12,14,16,18};
+	int vel[] = {1000, 1000, 1000, 1000, 1000, 1000, 50, 50, 50};
+	int Initpos[] = {0, 0, 0, 0, 0, 0, 2440, 2400, 1700};
+
+	robot->Init(3,3, robotid);
+
+	robot->TorqueOff();
+	robot->TorqueOn();
+
+	robot->SetGoalVelocity(vel);
+	//robot->SetGoalPosition(Initpos);
+	robot->SetFingerPosition(&Initpos[6]);
+}
+
+int isAllZero(int src[]){
+	for(int i = 0; i < NUM_XEL; i++){
+		if(src[i] != 0)
+			return -1;
+	}
+
+	return 1;
+}
+
+int WaitUntilMoveEnd(RobotArm *robot){
+	int checkTerm = 10;
+	int presVel[NUM_XEL];
+	int fingerLoad[NUM_FINGER];
+
+	while(1){
+		_sleep(33);
+		robot->GetPresVelocity(presVel);
+		robot->GetFingerLoad(fingerLoad);
+
+		if(isAllZero(presVel) == 1){
+
+			return 1;
+		}
+	}
+
+	return 1;
 }

@@ -87,6 +87,9 @@
     <ClCompile Include="EndEffectorRecord.cpp" />
     <ClCompile Include="KinectConnecter.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RobotController\DynamixelPro.cpp" />
+    <ClCompile Include="RobotController\MX_controller.cpp" />
+    <ClCompile Include="RobotController\RobotArm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ARMSDK\ARMSDK_Define.h" />
@@ -94,9 +97,14 @@
     <ClInclude Include="ARMSDK\Error.h" />
     <ClInclude Include="ARMSDK\JointData.h" />
     <ClInclude Include="ARMSDK\Kinematics.h" />
+    <ClInclude Include="ARMSDK\NX.h" />
     <ClInclude Include="ARMSDK\RobotInfo.h" />
     <ClInclude Include="EndEffectorRecord.h" />
     <ClInclude Include="KinectConnecter.h" />
+    <ClInclude Include="RobotController\dynamixel.h" />
+    <ClInclude Include="RobotController\DynamixelPro.h" />
+    <ClInclude Include="RobotController\MX_controller.h" />
+    <ClInclude Include="RobotController\RobotArm.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -16,6 +16,9 @@
     <Filter Include="ARMSDK">
       <UniqueIdentifier>{dfa7e0ae-43b2-42ac-a61b-73b6704b1442}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RobotControll">
+      <UniqueIdentifier>{d7fc8c8b-b236-4f92-9f56-41af9af2b530}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -38,6 +41,15 @@
     </ClCompile>
     <ClCompile Include="EndEffectorRecord.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="RobotController\MX_controller.cpp">
+      <Filter>RobotControll</Filter>
+    </ClCompile>
+    <ClCompile Include="RobotController\RobotArm.cpp">
+      <Filter>RobotControll</Filter>
+    </ClCompile>
+    <ClCompile Include="RobotController\DynamixelPro.cpp">
+      <Filter>RobotControll</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +79,21 @@
     </ClInclude>
     <ClInclude Include="EndEffectorRecord.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotController\MX_controller.h">
+      <Filter>RobotControll</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotController\RobotArm.h">
+      <Filter>RobotControll</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotController\dynamixel.h">
+      <Filter>RobotControll</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotController\DynamixelPro.h">
+      <Filter>RobotControll</Filter>
+    </ClInclude>
+    <ClInclude Include="ARMSDK\NX.h">
+      <Filter>ARMSDK</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
