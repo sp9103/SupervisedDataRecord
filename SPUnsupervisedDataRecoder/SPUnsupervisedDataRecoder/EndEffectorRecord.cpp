@@ -17,12 +17,13 @@ EndEffectorRecord::~EndEffectorRecord(void)
 //write function
 void EndEffectorRecord::CreateRecordFile(char *fileName){
 	if(fp_ = NULL){
-		fp_ = fopen(fileName, "wb");
+		fp_ = fopen(fileName, "ab");
 	}
 }
 
 void EndEffectorRecord::WriteData(char *RGBImgPath, char *DepthImgPath, cv::Point3f UpperLeft, cv::Point3f UpperRight, cv::Point3f Thumb){
 	SupervisedData tempData;
+
 	strcpy(tempData.DepthPath, DepthImgPath);
 	strcpy(tempData.RGBPath, RGBImgPath);
 	tempData.Thumb = Thumb;
@@ -34,7 +35,6 @@ void EndEffectorRecord::CloseCreatedFile(){
 	if(fp_ != NULL){
 		int dataCount = data_.size();
 		printf("Write Data... Data Count : %d\n", dataCount);
-		fwrite(&dataCount, sizeof(int), 1, fp_);
 
 		for(int i = 0; i < dataCount; i++){
 			SupervisedData tempData = data_.at(i);
@@ -68,19 +68,17 @@ void EndEffectorRecord::CloseCreatedFile(){
 }
 
 //Read function
-int EndEffectorRecord::OpenRecordFile(char *fileName){
+void EndEffectorRecord::OpenRecordFile(char *fileName){
 	if(fp_ = NULL){
 		fp_ = fopen(fileName, "rb");
-		int DataCount;
-		fread(&DataCount, sizeof(int), 1, fp_);
-
-		return DataCount;
 	}
-
-	return -1;
 }
 
-void EndEffectorRecord::ReadData(cv::Mat *RGBimg, cv::Mat *DepthImg, cv::Point3f *UpperLeft, cv::Point3f *UpperRight, cv::Point3f *Thumb){
+int EndEffectorRecord::ReadData(cv::Mat *RGBimg, cv::Mat *DepthImg, cv::Point3f *UpperLeft, cv::Point3f *UpperRight, cv::Point3f *Thumb){
+	if(feof(fp_)){
+		return -1;
+	}
+
 	int RGBPathLen, DEPTHPathLen;
 	char RGBPath[256], DepthPath[256];
 	fread(&RGBPathLen, sizeof(int), 1, fp_);
@@ -106,6 +104,8 @@ void EndEffectorRecord::ReadData(cv::Mat *RGBimg, cv::Mat *DepthImg, cv::Point3f
 	fread(&y, sizeof(float), 1, fp_);
 	fread(&z, sizeof(float), 1, fp_);
 	*Thumb = cv::Point3f(x,y,z);
+
+	return 1;
 }
 
 void EndEffectorRecord::CloseOpendFile(){

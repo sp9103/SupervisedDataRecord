@@ -5,7 +5,6 @@
 #include "stdafx.h"
 
 //File Format - Binary file
-//Header : Data Count
 //Contents :
 //RGBFilePathLength(Int) RGBFilePath(char * Len) DepthFilePathLength(Int) DepthFilePath(char * Len) EndEffector(UpperLeft, UpperRight, Thumb)
 //*Endeffector = 3d position ( x , y, z - float)
@@ -30,8 +29,8 @@ public:
 	void CloseCreatedFile();
 
 	//Read function
-	int OpenRecordFile(char *fileName);
-	void ReadData(cv::Mat *RGBimg, cv::Mat *DepthImg, cv::Point3f *UpperLeft, cv::Point3f *UpperRight, cv::Point3f *Thumb);			//return DataCount;
+	void OpenRecordFile(char *fileName);
+	int ReadData(cv::Mat *RGBimg, cv::Mat *DepthImg, cv::Point3f *UpperLeft, cv::Point3f *UpperRight, cv::Point3f *Thumb);			//return DataCount;
 	void CloseOpendFile();
 
 private:

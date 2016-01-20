@@ -46,7 +46,6 @@ int main(){
 
 	namedWindow("KinectColorFrame", CV_WINDOW_KEEPRATIO);
 	namedWindow("KinectDepthFrame", CV_WINDOW_KEEPRATIO);
-	//namedWindow("KinectMapFrame", CV_WINDOW_KEEPRATIO);
 
 	while(1){
 		presentStoredDataCount = 0;
@@ -110,9 +109,9 @@ int main(){
 					cv::resize(Crop_RGB, Crop_RGB, Size(240,240));
 					cv::resize(Crop_Depth, Crop_Depth, Size(240,240));
 					char tBuf[256];
-					sprintf(tBuf, "%s\\%s\\RGB\\%d_%d.jpg", DEFAULT_PATH, obj_name, pose_id, tCount);
+					sprintf(tBuf, "%s\\RGB\\%s\\RGB\\%d_%d.jpg", DEFAULT_PATH, obj_name, pose_id, tCount);
 					imwrite(tBuf, Crop_RGB);
-					sprintf(tBuf, "%s\\%s\\DEPTH\\%d_%d.jpg", DEFAULT_PATH, obj_name, pose_id, tCount);
+					sprintf(tBuf, "%s\\DEPTH\\%s\\DEPTH\\%d_%d.jpg", DEFAULT_PATH, obj_name, pose_id, tCount);
 					imwrite(tBuf, Crop_Depth);
 					printf("%d_%d.jpg saved!\n", pose_id, tCount);
 					tCount++;

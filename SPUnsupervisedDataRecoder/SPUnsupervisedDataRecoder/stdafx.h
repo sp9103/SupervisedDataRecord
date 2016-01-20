@@ -19,7 +19,7 @@
 #define BODY_COUNT				6
 
 #define PI						3.141592653589
-#define DEFAULT_PATH "E:\\ImageData\\LearningData"
+#define DEFAULT_PATH ".\\SupervisedData"
 #define TRANSFORM_SIZE			240
 
 ////Single Body Structure;
