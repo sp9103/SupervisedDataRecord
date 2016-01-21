@@ -114,16 +114,16 @@ int main(){
 			MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, dirpath, strlen(dirpath), szDir, MAX_PATH);
 			bool mkdir_check = CreateDirectory(szDir, NULL);									//루트 디렉토리
 
+			char binPath[256];
+			sprintf(binPath, "%s\\%s_%d.bin", dirpath, obj_name, pose_id);
+			record.CreateRecordFile(binPath);
+
 			sprintf(dirpath, "%s\\%s\\RGB", DEFAULT_PATH, obj_name);
 			MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, dirpath, strlen(dirpath), szDir, MAX_PATH);
 			mkdir_check = CreateDirectory(szDir, NULL);											//컬러 디렉토리
 			sprintf(dirpath, "%s\\%s\\DEPTH", DEFAULT_PATH, obj_name);
 			MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, dirpath, strlen(dirpath), szDir, MAX_PATH);
 			mkdir_check = CreateDirectory(szDir, NULL);											//뎁스 디렉토리
-
-			char binPath[256];
-			sprintf(binPath, "%s\\%s_%d.bin", dirpath, obj_name, pose_id);
-			record.CreateRecordFile(binPath);
 
 			while(1){
 				char key = cv::waitKey(OPENCV_WAIT_DELAY);
@@ -144,6 +144,8 @@ int main(){
 					tempPos[7] = UpperRightangle;
 					tempPos[8] = Thumbangle;
 					kin.ForwardWithFinger(tempPos, body, finger);
+
+					printf("Endeffector recorded.\n");
 
 					getEndEffector = 1;
 				}
@@ -166,10 +168,17 @@ int main(){
 					imwrite(tBuf, Crop_RGB);
 					sprintf(tBuf, "%s\\%s\\DEPTH\\%s_%d_%d.jpg", DEFAULT_PATH, obj_name, obj_name, pose_id, tCount);
 					imwrite(tBuf, Crop_Depth);
+
+					saveCheck = -1;
+					getEndEffector = -1;
+
+					char RGBbuf[256], Depttbuf[256];
+					sprintf(RGBbuf, "RGB\\%s_%d_%d.jpg", obj_name, pose_id, tCount);
+					sprintf(RGBbuf, "DEPTH\\%s_%d_%d.jpg", obj_name, pose_id, tCount);
+					record.WriteData(RGBbuf, Depttbuf, cv::Point3f(finger[0].x, finger[0].y, finger[0].z), cv::Point3f(finger[1].x, finger[1].y, finger[1].z), cv::Point3f(finger[2].x, finger[2].y, finger[2].z));
+
 					printf("%s_%d_%d.jpg saved!\n", obj_name, pose_id, tCount);
 					tCount++;
-
-					saveCheck *= -1;
 				}
 
 				//그리기
