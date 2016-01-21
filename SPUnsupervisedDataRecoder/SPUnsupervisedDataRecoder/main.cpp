@@ -14,6 +14,9 @@ bool fileTypeCheck(TCHAR *fileName);
 void ControllerInit(RobotArm *robot);
 int WaitUntilMoveEnd(RobotArm *robot);
 
+//각 오브젝트 클래스 & 포즈 아이디 하나당 바이너리 파일 하나가 생성됨.
+//DCNN에서 읽어들일때는 바이너리 파일들을 몽조리 읽어야 이미지와 endeffector pair를 읽을수있음.
+
 int main(){
 	printf("==================Unsupervise Data recoder===================\n");
 	Mat KinectColorImage;			//Kinect Color Image
