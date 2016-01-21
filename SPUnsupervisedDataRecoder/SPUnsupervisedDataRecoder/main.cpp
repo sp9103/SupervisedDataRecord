@@ -23,8 +23,8 @@ int main(){
 	int saveResolution = 480*2/3;
 	int saveDepthResolution = 180*2/3;
 	int presentStoredDataCount = 0;
-	int FrameCount = 0;
 	int saveCheck = -1;
+	int getEndEffector = -1;
 
 	KinectColorImage.create(KINECT_COLOR_HEIGHT, KINECT_COLOR_WIDTH, CV_8UC4);			//Kinect Color Image format BGRA 4 channel image
 	KinectDepthImage.create(KINECT_DEPTH_HEIGHT, KINECT_DEPTH_WIDTH, CV_8UC4);			//Kinect Depth Image format BGRA 4 Channel image
@@ -35,8 +35,10 @@ int main(){
 	RobotArm _controller;
 	armsdk::RobotInfo robot;
 	Kinematics kin;
-	
+
 	veci angi(6);
+	armsdk::Pose3D body[6];
+	armsdk::Pose3D finger[3];
 
 	//Leftarm
 	robot.AddJoint(  0.0, -ML_PI_2,    0.0,      0.0, ML_PI, -ML_PI, 251000, -251000, ML_PI, -ML_PI, 2);
@@ -57,11 +59,11 @@ int main(){
 	ControllerInit(&_controller);
 	WaitUntilMoveEnd(&_controller);
 
-//#ifdef RIGHT_ARM_USE
-//	dxl_write_dword(_controller.DXL_Get_Port(), 7, NX::P_HOMING_OFFSET_LL,  62750, 0);
-//#elif defined LEFT_ARM_USE
-//	dxl_write_dword(_controller.DXL_Get_Port(), 8, NX::P_HOMING_OFFSET_LL, -62750, 0);
-//#endif
+#ifdef RIGHT_ARM_USE
+	dxl_write_dword(_controller.DXL_Get_Port(), 7, NX::P_HOMING_OFFSET_LL,  62750, 0);
+#elif defined LEFT_ARM_USE
+	dxl_write_dword(_controller.DXL_Get_Port(), 8, NX::P_HOMING_OFFSET_LL, -62750, 0);
+#endif
 
 	_controller.Arm_Get_JointValue(&angi);
 
@@ -93,6 +95,7 @@ int main(){
 
 		if(m == 'q' || m == 27){
 			printf("Data Recorder exit...\n");
+			record.CloseCreatedFile();
 			break;
 		}
 		// file 저장부
@@ -110,18 +113,40 @@ int main(){
 			sprintf(dirpath, "%s\\%s", DEFAULT_PATH, obj_name);
 			MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, dirpath, strlen(dirpath), szDir, MAX_PATH);
 			bool mkdir_check = CreateDirectory(szDir, NULL);									//루트 디렉토리
-			sprintf(dirpath, "%s\\RGB\\%s", DEFAULT_PATH, obj_name);
+
+			sprintf(dirpath, "%s\\%s\\RGB", DEFAULT_PATH, obj_name);
 			MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, dirpath, strlen(dirpath), szDir, MAX_PATH);
 			mkdir_check = CreateDirectory(szDir, NULL);											//컬러 디렉토리
-			sprintf(dirpath, "%s\\DEPTH\\%s", DEFAULT_PATH, obj_name);
+			sprintf(dirpath, "%s\\%s\\DEPTH", DEFAULT_PATH, obj_name);
 			MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, dirpath, strlen(dirpath), szDir, MAX_PATH);
 			mkdir_check = CreateDirectory(szDir, NULL);											//뎁스 디렉토리
+
+			char binPath[256];
+			sprintf(binPath, "%s\\%s_%d.bin", dirpath, obj_name, pose_id);
+			record.CreateRecordFile(binPath);
 
 			while(1){
 				char key = cv::waitKey(OPENCV_WAIT_DELAY);
 
-				if(key == 's')
-					saveCheck *= -1;
+				if(getEndEffector == 1){
+					if(key == 's')
+						saveCheck *= -1;
+				}
+
+				if(key == 'a'){
+					int tempPos[9];			//6_Thumb, 7_upperLeft, 8_Upperright
+					_controller.GetPresPosition(tempPos);
+
+					int Thumbangle = tempPos[6];
+					int UpperLeftangle = tempPos[7];
+					int UpperRightangle = tempPos[8];
+					tempPos[6] = UpperLeftangle;
+					tempPos[7] = UpperRightangle;
+					tempPos[8] = Thumbangle;
+					kin.ForwardWithFinger(tempPos, body, finger);
+
+					getEndEffector = 1;
+				}
 
 				Kinect.GetColorImage(&KinectColorImage);
 				Kinect.GetDepthImage(&KinectDepthImage);
@@ -130,21 +155,21 @@ int main(){
 				cv::Rect cropDepth(KINECT_DEPTH_WIDTH/2 - saveDepthResolution/2 - 20,KINECT_DEPTH_HEIGHT/2 - 240/2 + 60,saveDepthResolution, saveDepthResolution);
 
 				//저장부
-				if(FrameCount > 2 && saveCheck == 1){
-					FrameCount = 0;
+				if(saveCheck == 1 && getEndEffector == 1){
 					cv::Mat Crop_RGB = KinectColorImage(cropRect);
-					//cv::Mat Crop_Depth = KinectMappingImage(cropRect);
 					cv::Mat Crop_Depth = KinectDepthImage(cropDepth);
 
 					cv::resize(Crop_RGB, Crop_RGB, Size(240,240));
 					cv::resize(Crop_Depth, Crop_Depth, Size(240,240));
 					char tBuf[256];
-					sprintf(tBuf, "%s\\RGB\\%s\\RGB\\%d_%d.jpg", DEFAULT_PATH, obj_name, pose_id, tCount);
+					sprintf(tBuf, "%s\\%s\\RGB\\%s_%d_%d.jpg", DEFAULT_PATH, obj_name, obj_name, pose_id, tCount);
 					imwrite(tBuf, Crop_RGB);
-					sprintf(tBuf, "%s\\DEPTH\\%s\\DEPTH\\%d_%d.jpg", DEFAULT_PATH, obj_name, pose_id, tCount);
+					sprintf(tBuf, "%s\\%s\\DEPTH\\%s_%d_%d.jpg", DEFAULT_PATH, obj_name, obj_name, pose_id, tCount);
 					imwrite(tBuf, Crop_Depth);
-					printf("%d_%d.jpg saved!\n", pose_id, tCount);
+					printf("%s_%d_%d.jpg saved!\n", obj_name, pose_id, tCount);
 					tCount++;
+
+					saveCheck *= -1;
 				}
 
 				//그리기
@@ -156,12 +181,12 @@ int main(){
 				imshow("KinectColorFrame", KinectDraw);
 				imshow("KinectDepthFrame", KinectDepthDraw);
 
-				FrameCount++;
-
 				if(key == 27)
 					break;
 			}
 			printf("%d data save complete!\n", tCount);
+
+			record.CloseCreatedFile();
 		}
 	}
 

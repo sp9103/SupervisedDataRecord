@@ -7,6 +7,7 @@
 
 #include "ARMSDK\Kinematics.h"
 #include "ARMSDK\RobotInfo.h"
+#include "ARMSDK\NX.h"
 
 #define KINECT_COLOR_WIDTH		1920
 #define KINECT_COLOR_HEIGHT		1080

@@ -29,6 +29,8 @@ void EndEffectorRecord::WriteData(char *RGBImgPath, char *DepthImgPath, cv::Poin
 	tempData.Thumb = Thumb;
 	tempData.UpperLeft = UpperLeft;
 	tempData.UpperRight = UpperRight;
+
+	data_.push_back(tempData);
 }
 
 void EndEffectorRecord::CloseCreatedFile(){
