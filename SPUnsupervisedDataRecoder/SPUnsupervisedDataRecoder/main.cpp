@@ -18,7 +18,6 @@ int main(){
 	printf("==================Unsupervise Data recoder===================\n");
 	Mat KinectColorImage;			//Kinect Color Image
 	Mat KinectDepthImage;
-	Mat KinectMappingImage;
 
 	int saveResolution = 480*2/3;
 	int saveDepthResolution = 180*2/3;
@@ -28,7 +27,6 @@ int main(){
 
 	KinectColorImage.create(KINECT_COLOR_HEIGHT, KINECT_COLOR_WIDTH, CV_8UC4);			//Kinect Color Image format BGRA 4 channel image
 	KinectDepthImage.create(KINECT_DEPTH_HEIGHT, KINECT_DEPTH_WIDTH, CV_8UC4);			//Kinect Depth Image format BGRA 4 Channel image
-	KinectMappingImage.create(KINECT_COLOR_HEIGHT, KINECT_COLOR_WIDTH, CV_8UC1);
 
 	KinectConnecter Kinect;
 	EndEffectorRecord record;
@@ -174,7 +172,7 @@ int main(){
 
 					char RGBbuf[256], Depttbuf[256];
 					sprintf(RGBbuf, "RGB\\%s_%d_%d.jpg", obj_name, pose_id, tCount);
-					sprintf(RGBbuf, "DEPTH\\%s_%d_%d.jpg", obj_name, pose_id, tCount);
+					sprintf(Depttbuf, "DEPTH\\%s_%d_%d.jpg", obj_name, pose_id, tCount);
 					record.WriteData(RGBbuf, Depttbuf, cv::Point3f(finger[0].x, finger[0].y, finger[0].z), cv::Point3f(finger[1].x, finger[1].y, finger[1].z), cv::Point3f(finger[2].x, finger[2].y, finger[2].z));
 
 					printf("%s_%d_%d.jpg saved!\n", obj_name, pose_id, tCount);
