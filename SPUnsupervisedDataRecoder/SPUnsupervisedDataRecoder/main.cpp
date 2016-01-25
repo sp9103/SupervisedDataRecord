@@ -144,7 +144,7 @@ int main(){
 					tempPos[6] = UpperLeftangle;
 					tempPos[7] = UpperRightangle;
 					tempPos[8] = Thumbangle;
-					kin.ForwardWithFinger(tempPos, body, finger);
+					kin.ForwardWithFinger(tempPos, body, finger);		//Forward는 6_UpperLeft, 7_UpperRight, 8_Thumb
 
 					printf("Endeffector recorded.\n");
 
@@ -165,20 +165,20 @@ int main(){
 					cv::resize(Crop_RGB, Crop_RGB, Size(240,240));
 					cv::resize(Crop_Depth, Crop_Depth, Size(240,240));
 					char tBuf[256];
-					sprintf(tBuf, "%s\\%s\\RGB\\%s_%d_%d.jpg", DEFAULT_PATH, obj_name, obj_name, pose_id, tCount);
+					sprintf(tBuf, "%s\\%s\\RGB\\%s_%d_%d.bmp", DEFAULT_PATH, obj_name, obj_name, pose_id, tCount);
 					imwrite(tBuf, Crop_RGB);
-					sprintf(tBuf, "%s\\%s\\DEPTH\\%s_%d_%d.jpg", DEFAULT_PATH, obj_name, obj_name, pose_id, tCount);
+					sprintf(tBuf, "%s\\%s\\DEPTH\\%s_%d_%d.bmp", DEFAULT_PATH, obj_name, obj_name, pose_id, tCount);
 					imwrite(tBuf, Crop_Depth);
 
 					saveCheck = -1;
 					getEndEffector = -1;
 
 					char RGBbuf[256], Depttbuf[256];
-					sprintf(RGBbuf, "RGB\\%s_%d_%d.jpg", obj_name, pose_id, tCount);
-					sprintf(Depttbuf, "DEPTH\\%s_%d_%d.jpg", obj_name, pose_id, tCount);
+					sprintf(RGBbuf, "RGB\\%s_%d_%d.bmp", obj_name, pose_id, tCount);
+					sprintf(Depttbuf, "DEPTH\\%s_%d_%d.bmp", obj_name, pose_id, tCount);
 					record.WriteData(RGBbuf, Depttbuf, cv::Point3f(finger[0].x, finger[0].y, finger[0].z), cv::Point3f(finger[1].x, finger[1].y, finger[1].z), cv::Point3f(finger[2].x, finger[2].y, finger[2].z));
 
-					printf("%s_%d_%d.jpg saved!\n", obj_name, pose_id, tCount);
+					printf("%s_%d_%d.bmp saved!\n", obj_name, pose_id, tCount);
 					tCount++;
 				}
 
